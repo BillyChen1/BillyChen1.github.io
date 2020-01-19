@@ -294,6 +294,181 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://billychen1.github.io/2020/01/19/windows-ubuntu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Billy Chen 陈启明">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen Qiming's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/01/19/windows-ubuntu/" itemprop="url">Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-19T18:11:03+08:00">
+                2020-01-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/01/19/windows-ubuntu/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/01/19/windows-ubuntu/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Win10-Ubuntu-16-04-双系统安装步骤以及问题的解决"><a href="#Win10-Ubuntu-16-04-双系统安装步骤以及问题的解决" class="headerlink" title="Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决"></a>Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决</h1><h2 id="双系统安装步骤"><a href="#双系统安装步骤" class="headerlink" title="双系统安装步骤"></a>双系统安装步骤</h2><h3 id="步骤一：Ubuntu-16-04系统盘的制作"><a href="#步骤一：Ubuntu-16-04系统盘的制作" class="headerlink" title="步骤一：Ubuntu 16.04系统盘的制作"></a>步骤一：Ubuntu 16.04系统盘的制作</h3><ol>
+<li>下载Ubuntu镜像<br> 推荐使用<a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/16.04/" target="_blank" rel="noopener">清华大学开源软件镜像站</a>,选择ubuntu-16.04.6-desktop-amd64.iso下载即可</li>
+<li>下载UltraSO，使用U盘制作启动盘<ol>
+<li>选择<em>文件-&gt;打开</em>，打开Ubuntu的iso镜像。</li>
+<li>在左下角区域选择U盘，点击<em>启动-&gt;写入硬盘映像</em>。</li>
+<li>在弹出的对话框中选择写入方式为hdd或hdd+，对硬盘格式化后再点击写入。</li>
+<li>写入完毕后启动盘制作完成。</li>
+</ol>
+</li>
+</ol>
+<h3 id="步骤二：分区与安装"><a href="#步骤二：分区与安装" class="headerlink" title="步骤二：分区与安装"></a>步骤二：分区与安装</h3><ol>
+<li>使用Windows磁盘管理进行分区。<br> 通过<em>WIN + X</em>进入磁盘管理，右键点击有空余空间的磁盘，选择<em>压缩卷</em>，一般大小可设置为50G。此后的Ubuntu系统便安装在此区域。</li>
+<li>关闭Win10系统的快速启动和安全启动。<br> 具体操作可参考<a href="https://www.jianshu.com/p/38e6be8efecf" target="_blank" rel="noopener">win10安装ubuntu18.04 LTS双系统</a></li>
+<li>将启动盘插入电脑，重启电脑，进入BIOS，将U盘设置为第一启动项。</li>
+<li>按照提示信息进行安装。<ul>
+<li><strong>注意</strong>：在分区时，选择自定义模式。一般来说，只需要划分两个区，即swap区(充当虚拟内存，分区格式为swap)和主分区(挂载点/，安装系统和软件，分区格式为ext4)</li>
+</ul>
+</li>
+<li>安装完成后，拔下U盘，重启电脑，选择进入Ubuntu系统。至此，双系统安装已经完成。</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/01/19/windows-ubuntu/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://billychen1.github.io/2020/01/18/markdown/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -685,7 +860,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -696,7 +871,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -707,7 +882,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
