@@ -106,7 +106,7 @@
 
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>):</span><br><span class="line">  print(i)</span><br></pre></td></tr></table></figure>
 
-]]></content>
+<img src="/2020/01/18/markdown/testPicture.jpg" class="" width="200" height="300" title="图片样例">]]></content>
       <categories>
         <category>TEST</category>
       </categories>
