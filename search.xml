@@ -30,7 +30,7 @@
 </li>
 </ul>
 <ul>
-<li><p>将暂存区文件提交到本地仓库</p>
+<li><p>将暂存区的修改提交到本地仓库</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">"your change"</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>本地仓库与远程仓库建立联系（确保SSH Key已经配置好）</p>
@@ -71,6 +71,12 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --hard HEAD~&lt;<span class="built_in">times</span>&gt;</span><br></pre></td></tr></table></figure>
 <p>回退指定commit_id的版本（id可在log或reflog中找到）</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --hard &lt;commit_id&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>改乱了工作区内的内容，想丢弃工作区的修改（返回到版本库的状态）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout -- &lt;filename&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>改乱了工作区的内容并且提交到暂存区，以下命令可将修改回退到工作区，此时就回到了上一个场景的情况</p>
+<pre><code class="bash">git reset HEAD &lt;filename&gt;</code></pre>
 </li>
 </ul>
 ]]></content>
