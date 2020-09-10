@@ -1,6 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Spring——IoC容器</title>
+    <url>/2020/09/10/spring-ioc/</url>
+    <content><![CDATA[<h1 id="Spring-IoC容器"><a href="#Spring-IoC容器" class="headerlink" title="Spring IoC容器"></a>Spring IoC容器</h1><h2 id="1-思想"><a href="#1-思想" class="headerlink" title="1.思想"></a>1.思想</h2><p><code>bean</code>对象的创建、依赖关系交给<code>Ioc</code>容器来管理，无需手动<code>new</code>对象，方便解耦，便于开发。</p>
+<h2 id="2-IoC容器"><a href="#2-IoC容器" class="headerlink" title="2.IoC容器"></a>2.IoC容器</h2><p><code>Spring</code>容器的最顶层接口是<code>BeanFactory</code>，实际开发中常用<code>ApplicationContext</code>。</p>
+<p>两个接口的区别：</p>
+<ul>
+<li><code>ApplicationContext</code>：立即加载。读取配置文件后马上创建对象放入容器。</li>
+<li><code>BeanFactory</code>：延迟加载。什么时候根据<code>id</code>获取对象，什么时候才真正创建对象。</li>
+</ul>
+<p><code>ApplicationContext</code>的三个常用实现类</p>
+<ul>
+<li><p><code>ClassPathApplicationContext</code>：加载类路径下的配置文件。</p>
+</li>
+<li><p><code>FileSystemXmlApplicationContext</code>：加载磁盘任意路径下的配置文件。</p>
+</li>
+<li><p><code>AnnotationConfigApplicationContext</code>：读取注解 创建容器。</p>
+</li>
+</ul>
+<h2 id="3-Bean"><a href="#3-Bean" class="headerlink" title="3.Bean"></a>3.Bean</h2><h3 id="1-创建bean的三种方式"><a href="#1-创建bean的三种方式" class="headerlink" title="1.创建bean的三种方式"></a>1.创建bean的三种方式</h3><ol>
+<li>使用默认的无参构造器（如果没有无参构造器，则报错）</li>
+<li>使用静态工厂的静态方法创建对象</li>
+<li>使用实例工厂的方法创建对象</li>
+</ol>
+<a id="more"></a>
+
+<h3 id="2-bean对象的生命周期"><a href="#2-bean对象的生命周期" class="headerlink" title="2.bean对象的生命周期"></a>2.bean对象的生命周期</h3><ol>
+<li>单例<ul>
+<li>出生：当容器创建时对象出生</li>
+<li>活着：只要容器还在，对象一直活着</li>
+<li>死亡：容器销毁，对象消亡</li>
+<li>总结：单例对象的生命周期与容器相同</li>
+</ul>
+</li>
+<li>多例<ul>
+<li>出生：使用对象时才创建（延迟加载）</li>
+<li>活着：对象只要在使用过程中就一直活着</li>
+<li>死亡：当对象长时间不用且无其他对象引用时，由<code>GC</code>回收</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-依赖注入"><a href="#3-依赖注入" class="headerlink" title="3.依赖注入"></a>3.依赖注入</h3><p> 依赖关系的管理交给Spring来维护在当前类需要用到其他类的对象时，由Spring为我们提供，只需在配置文件中说明。</p>
+<p>依赖注入的数据有三类：</p>
+<ol>
+<li>基本类型和<code>String</code></li>
+<li>其他<code>bean</code>类型（在配置文件中或注解中配置过的bean）</li>
+<li>复杂类型（集合类型）</li>
+</ol>
+<p>注入的方式有三种：</p>
+<ol>
+<li>使用构造方法</li>
+<li>使用<code>set</code>方法</li>
+<li>使用注解</li>
+</ol>
+<h3 id="4-常用注解"><a href="#4-常用注解" class="headerlink" title="4.常用注解"></a>4.常用注解</h3><ol>
+<li>用于创建对象的注解（作用类似于<code>bean</code>标签）</li>
+</ol>
+<ul>
+<li><code>@Component</code></li>
+</ul>
+<blockquote>
+<p>作用：写在类之前，把当前类的对象注入到容器中</p>
+<p>属性：value 指定bean的id 默认值是当前类名首字母改为小写</p>
+</blockquote>
+<ul>
+<li><p><code>@Controller</code>：一般用在表现层</p>
+</li>
+<li><p><code>@Serive</code>：一般用在业务层</p>
+</li>
+<li><p><code>@Repository</code>：一般用在持久层</p>
+<p>  以上三个注解的作用与属性和<code>Component</code>一样，<br>他们三个是<code>Spring</code>框架提供的明确的三层使用的注解，使三层对象更加清晰。</p>
+</li>
+</ul>
+<ol start="2">
+<li>用于注入数据的注解（作用相当于<code>properties</code>标签）</li>
+</ol>
+<ul>
+<li><p><code>@Autowired</code>:</p>
+<blockquote>
+<p><strong>作用</strong>：自动按照类型注入。只要容器中有唯一的一个bean对象类型和要注入的变量类型匹配，就可以注入成功</p>
+<p><strong>使用的位置</strong>：变量上或方法上</p>
+<p><strong>注意</strong>：如果容器中没有任何bean的类型匹配，则报错。<br>如果容器中有多个<code>bean</code>的类型和要注入的变量类型匹配，如果要注入的变量名称和<code>bean</code>的<code>id</code>相匹配，则注入之，否则报错。<br>另外，使用注解的方法注入时，set方法不是必须的</p>
+</blockquote>
+</li>
+<li><p><code>@Qualifier</code></p>
+<blockquote>
+<p><strong>作用</strong>：在按照类中注入的基础上再按名称注入。</p>
+<p><strong>注意</strong>：它给类成员注入时不能单独使用，必须和<code>Autowired</code>配合使用，但是在给方法参数注入时可以单独使用。</p>
+<p><strong>属性</strong>：<code>value</code> 用于指定注入<code>bean</code>的<code>id</code></p>
+</blockquote>
+</li>
+<li><p><code>@Resource</code></p>
+<blockquote>
+<p><strong>作用</strong>：直接按照<code>bean</code>的id注入，可以独立使用，不需要再和<code>Autowired</code>一起使用</p>
+<p><strong>属性</strong>：name 用于指定注入<code>bean</code>的<code>id</code></p>
+<p><strong>注意</strong>：以上三个注解只能注入其他<code>bean</code>类型的数据，而基本类型和<code>String</code>类型无法使用上述注解</p>
+</blockquote>
+</li>
+</ul>
+<p>另外，集合类型注入只能使用xml</p>
+<ul>
+<li><code>@Value</code><blockquote>
+<p><strong>作用</strong>：用于注入基本类型和<code>String</code>类型的数据</p>
+<p><strong>属性</strong>：<code>value</code>：用于指定数据的值</p>
+<p>它可以使用<code>Spring</code>中的<code>SpEL</code>。<code>SpEL</code>写法：<code>${表达式}</code></p>
+</blockquote>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Spring</category>
+      </categories>
+      <tags>
+        <tag>Spring</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Git学习</title>
     <url>/2020/01/30/learngit/</url>
     <content><![CDATA[<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><p>Git是一个分布式版本控制系统，分为工作区，版本库和远程仓库。</p>

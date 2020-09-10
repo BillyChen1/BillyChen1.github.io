@@ -294,6 +294,182 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://billychen1.github.io/2020/09/10/spring-ioc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Billy Chen 陈启明">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chen Qiming's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/09/10/spring-ioc/" itemprop="url">Spring——IoC容器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-10T22:35:07+08:00">
+                2020-09-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/10/spring-ioc/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/09/10/spring-ioc/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Spring-IoC容器"><a href="#Spring-IoC容器" class="headerlink" title="Spring IoC容器"></a>Spring IoC容器</h1><h2 id="1-思想"><a href="#1-思想" class="headerlink" title="1.思想"></a>1.思想</h2><p><code>bean</code>对象的创建、依赖关系交给<code>Ioc</code>容器来管理，无需手动<code>new</code>对象，方便解耦，便于开发。</p>
+<h2 id="2-IoC容器"><a href="#2-IoC容器" class="headerlink" title="2.IoC容器"></a>2.IoC容器</h2><p><code>Spring</code>容器的最顶层接口是<code>BeanFactory</code>，实际开发中常用<code>ApplicationContext</code>。</p>
+<p>两个接口的区别：</p>
+<ul>
+<li><code>ApplicationContext</code>：立即加载。读取配置文件后马上创建对象放入容器。</li>
+<li><code>BeanFactory</code>：延迟加载。什么时候根据<code>id</code>获取对象，什么时候才真正创建对象。</li>
+</ul>
+<p><code>ApplicationContext</code>的三个常用实现类</p>
+<ul>
+<li><p><code>ClassPathApplicationContext</code>：加载类路径下的配置文件。</p>
+</li>
+<li><p><code>FileSystemXmlApplicationContext</code>：加载磁盘任意路径下的配置文件。</p>
+</li>
+<li><p><code>AnnotationConfigApplicationContext</code>：读取注解 创建容器。</p>
+</li>
+</ul>
+<h2 id="3-Bean"><a href="#3-Bean" class="headerlink" title="3.Bean"></a>3.Bean</h2><h3 id="1-创建bean的三种方式"><a href="#1-创建bean的三种方式" class="headerlink" title="1.创建bean的三种方式"></a>1.创建bean的三种方式</h3><ol>
+<li>使用默认的无参构造器（如果没有无参构造器，则报错）</li>
+<li>使用静态工厂的静态方法创建对象</li>
+<li>使用实例工厂的方法创建对象</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/09/10/spring-ioc/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://billychen1.github.io/2020/01/30/learngit/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -667,7 +843,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -678,7 +854,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -689,7 +865,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
