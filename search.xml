@@ -73,6 +73,7 @@
 <p>  以上三个注解的作用与属性和<code>Component</code>一样，<br>他们三个是<code>Spring</code>框架提供的明确的三层使用的注解，使三层对象更加清晰。</p>
 </li>
 </ul>
+<hr>
 <ol start="2">
 <li>用于注入数据的注解（作用相当于<code>properties</code>标签）</li>
 </ol>
@@ -105,6 +106,44 @@
 <p><strong>作用</strong>：用于注入基本类型和<code>String</code>类型的数据</p>
 <p><strong>属性</strong>：<code>value</code>：用于指定数据的值</p>
 <p>它可以使用<code>Spring</code>中的<code>SpEL</code>。<code>SpEL</code>写法：<code>${表达式}</code></p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<ol start="3">
+<li>一些和配置有关的注解</li>
+</ol>
+<ul>
+<li><p>可以使用配置类以代替<code>bean.xml</code>配置文件的作用</p>
+</li>
+<li><p><code>@Configuration</code></p>
+<blockquote>
+<p><strong>作用</strong>：指定当前类是一个配置类</p>
+<p><strong>细节</strong>：当配置类作为<code>AnnotationConfigApplicationContext</code>对象创建的参数时，可以不写。</p>
+</blockquote>
+</li>
+<li><p><code>@ComponentScan</code></p>
+<blockquote>
+<p><strong>作用</strong>：指定创建容器时要扫描的包</p>
+</blockquote>
+</li>
+<li><p><code>@Bean</code></p>
+<blockquote>
+<p><strong>作用</strong>：用在方法前，将方法的返回值作为<code>bean</code>对象存入<code>IoC</code>容器</p>
+<p><strong>属性</strong>：<code>name</code> 用于指定<code>bean</code>的<code>id</code> 默认值为当前方法名</p>
+<p><strong>细节</strong>：使用注解配置方法时，如果方法有参数，<code>Spring</code>框架会去容器中查找是否有该类型的<code>bean</code>，查找方式和<code>Autowired</code>相同</p>
+</blockquote>
+</li>
+<li><p><code>@Import</code></p>
+<blockquote>
+<p><strong>作用</strong>：用于导入其他配置类</p>
+<p><strong>属性</strong>：<code>value</code> 用于指定其他配置类的字节码</p>
+</blockquote>
+</li>
+<li><p><code>@PropertySource</code></p>
+<blockquote>
+<p><strong>作用</strong>：用于指定properties文件的位置</p>
+<p><strong>属性</strong>：<code>value</code> 指定文件名称和路径<br>关键字<code>classpath</code>表示类路径下</p>
 </blockquote>
 </li>
 </ul>
