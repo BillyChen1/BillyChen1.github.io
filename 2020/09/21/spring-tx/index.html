@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Git," />
+  <meta name="keywords" content="Spring,Java," />
 
 
 
@@ -79,16 +79,17 @@
 
 
 
-<meta name="description" content="基本结构Git是一个分布式版本控制系统，分为工作区，版本库和远程仓库。 工作区是本地能看到的目录，版本库可分为暂存区和本地仓库，远程仓库被置于远程，可由Github托管。 把本地文件放入本地仓库分两步进行： 第一步：git add将工作区的文件添加到暂存区； 第二步：git commit将暂存区的所有内容提交到本地仓库（当前分支） 接下来，在本地仓库和远程仓库已经关联的条件下，即可使用git pu">
+<meta name="description" content="Spring——事务1. 基于XML的声明式事务控制 配置事务管理器  配置事务的通知  属性 id: 事务通知的唯一标识 transaction-manager给事务通知提供一个事务管理器的引用  配置AOP中的切入点表达式  建立事务通知和切入点表达式的关系  配置事务的属性(在事务通知tx:advice标签内部配置)">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Git学习">
-<meta property="og:url" content="https://billychen1.github.io/2020/01/30/learngit/index.html">
+<meta property="og:title" content="Spring——事务">
+<meta property="og:url" content="https://billychen1.github.io/2020/09/21/spring-tx/index.html">
 <meta property="og:site_name" content="Chen Qiming&#39;s Blog">
-<meta property="og:description" content="基本结构Git是一个分布式版本控制系统，分为工作区，版本库和远程仓库。 工作区是本地能看到的目录，版本库可分为暂存区和本地仓库，远程仓库被置于远程，可由Github托管。 把本地文件放入本地仓库分两步进行： 第一步：git add将工作区的文件添加到暂存区； 第二步：git commit将暂存区的所有内容提交到本地仓库（当前分支） 接下来，在本地仓库和远程仓库已经关联的条件下，即可使用git pu">
-<meta property="article:published_time" content="2020-01-30T04:33:56.000Z">
-<meta property="article:modified_time" content="2020-04-09T10:32:33.585Z">
+<meta property="og:description" content="Spring——事务1. 基于XML的声明式事务控制 配置事务管理器  配置事务的通知  属性 id: 事务通知的唯一标识 transaction-manager给事务通知提供一个事务管理器的引用  配置AOP中的切入点表达式  建立事务通知和切入点表达式的关系  配置事务的属性(在事务通知tx:advice标签内部配置)">
+<meta property="article:published_time" content="2020-09-21T13:45:19.000Z">
+<meta property="article:modified_time" content="2020-09-21T13:47:34.645Z">
 <meta property="article:author" content="Billy Chen 陈启明">
-<meta property="article:tag" content="Git">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://billychen1.github.io/2020/01/30/learngit/"/>
+  <link rel="canonical" href="https://billychen1.github.io/2020/09/21/spring-tx/"/>
 
 
 
 
 
-  <title>Git学习 | Chen Qiming's Blog</title>
+  <title>Spring——事务 | Chen Qiming's Blog</title>
   
 
 
@@ -296,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://billychen1.github.io/2020/01/30/learngit/">
+    <link itemprop="mainEntityOfPage" href="https://billychen1.github.io/2020/09/21/spring-tx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Billy Chen 陈启明">
@@ -313,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Git学习</h1>
+          <h1 class="post-title" itemprop="name headline">Spring——事务</h1>
         
 
         <div class="post-meta">
@@ -325,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-30T12:33:56+08:00">
-                2020-01-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-21T21:45:19+08:00">
+                2020-09-21
               </time>
             
 
@@ -348,8 +349,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Git/" itemprop="url" rel="index">
-                    <span itemprop="name">Git</span>
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
                   </a>
                 </span>
 
@@ -366,8 +367,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2020/01/30/learngit/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2020/01/30/learngit/" itemprop="commentCount"></span>
+                <a href="/2020/09/21/spring-tx/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/09/21/spring-tx/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -395,82 +396,35 @@
       
 
       
-        <h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><p>Git是一个分布式版本控制系统，分为工作区，版本库和远程仓库。</p>
-<p>工作区是本地能看到的目录，版本库可分为暂存区和本地仓库，远程仓库被置于远程，可由Github托管。</p>
-<p>把本地文件放入本地仓库分两步进行：</p>
-<p>第一步：<code>git add</code>将工作区的文件添加到暂存区；</p>
-<p>第二步：<code>git commit</code>将暂存区的所有内容提交到本地仓库（当前分支）</p>
-<p>接下来，在本地仓库和远程仓库已经关联的条件下，即可使用<code>git push</code>推送当前分支到远程。</p>
+        <h1 id="Spring——事务"><a href="#Spring——事务" class="headerlink" title="Spring——事务"></a>Spring——事务</h1><h2 id="1-基于XML的声明式事务控制"><a href="#1-基于XML的声明式事务控制" class="headerlink" title="1. 基于XML的声明式事务控制"></a>1. 基于XML的声明式事务控制</h2><ol>
+<li><p>配置事务管理器</p>
+</li>
+<li><p>配置事务的通知</p>
+<p> 属性<br> <code>id</code>: 事务通知的唯一标识<br> <code>transaction-manager</code>给事务通知提供一个事务管理器的引用</p>
+</li>
+<li><p>配置AOP中的切入点表达式</p>
+</li>
+<li><p>建立事务通知和切入点表达式的关系</p>
+</li>
+<li><p>配置事务的属性(在事务通知tx:advice标签内部配置)</p>
+</li>
+</ol>
 <a id="more"></a>
+<blockquote>
+<p><code>isolation</code>：事务隔离界别，默认值<code>DEFAULT</code>，表示使用数据库的默认隔离级别</p>
+<p><code>propagation</code>：指定传播行为默认值为<code>REQUIRED</code>，表示一定有事务（增删改的选择，而查询方法可选择<code>SUPPORTS</code>）</p>
+<p><code>read-only</code>：指定事务是否只读，只有查询方法才能设置为<code>true</code>，默认值为<code>false</code><br><code>timeout</code>：指定事务的超时时间 默认值-1 永不超时</p>
+<p><code>rollback-for</code>：指定一个异常，产生该异常时事务回滚，产生其他异常时不回滚。没有默认值，表示任何异常都回滚</p>
+<p><code>no-rollback-for</code>：指定一个异常，产生该异常时事务不回滚，产生其他异常时事务回滚。没有默认值，表示任何异常都回滚</p>
+</blockquote>
+<p>以下是一个配置的例子</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"transactionManager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">"txAdvice"</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置事务属性--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"*"</span> <span class="attr">propagation</span>=<span class="string">"REQUIRED"</span> <span class="attr">read-only</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--通配符指以find开头的所有方法--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"find*"</span> <span class="attr">propagation</span>=<span class="string">"SUPPORTS"</span> <span class="attr">read-only</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置切入点表达式--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"pt1"</span> <span class="attr">expression</span>=<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:pointcut</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--建立切入点和事务通知的关系--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">advice-ref</span>=<span class="string">"txAdvice"</span> <span class="attr">pointcut-ref</span>=<span class="string">"pt1"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:advisor</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
-<h2 id="多人协作开发"><a href="#多人协作开发" class="headerlink" title="多人协作开发"></a>多人协作开发</h2><p><code>master</code>分支是主分支，用于发布版本；</p>
-<p><code>dev</code>分支是开发分支。每个成员都在各自<code>dev</code>分支上开发，并时不时地推送到远程；</p>
-<p><code>feature</code>分支可用于开发新功能，开发完成后，合并到<code>dev</code>分支，最后删除<code>dev</code>分支；</p>
-<p><code>bug</code>分支可以被临时建立来修改bug，修改后，合并分支，删除<code>bug</code>分支。</p>
-<p>总之，<code>master</code>分支用于发布版本，每个人在各自的<code>dev</code>分支上开发，时不时往远程的<code>dev</code>进行提交，合并。如果向远程提交<code>dev</code>分支时出现冲突（即你的同伴和你对同一份文件进行了修改），则需要先<code>git pull</code>，在本地解决冲突后再提交(<code>git commit</code>、<code>git push</code>)</p>
-<hr>
-<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><ul>
-<li><p>将指定文件添加进入暂存区</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-<p>（<code>git add .</code>表示将所有文件加入暂存区）</p>
-</li>
-<li><p>删除版本库中暂存区指定文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rm &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-<ul>
-<li><p>将暂存区的修改提交到本地仓库</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m <span class="string">"your change"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>本地仓库与远程仓库建立联系（确保SSH Key已经配置好）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://github.com/YOUR_NAME/REPO_NAME.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将远程分支拉到工作区（出现冲突时需要进行这一步，因为要在本地进行合并）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>提交到远程仓库</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-<p>如果远程仓库为空，则</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>从远程仓库克隆（会自动把本地仓库与远程仓库关联起来）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/YOUR_NAME/REPO_NAME.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建并进入分支</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git switch -c &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>切换分支</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git switch &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将目标分支合并到当前分支</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git merge &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除分支</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看分支情况</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --pretty=oneline --graph</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看以往提交的版本</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reflog</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>版本回退<br>回退指定次数</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD~&lt;<span class="built_in">times</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>回退指定commit_id的版本（id可在log或reflog中找到）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard &lt;commit_id&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>改乱了工作区内的内容，想丢弃工作区的修改（返回到版本库的状态）</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -- &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>改乱了工作区的内容并且提交到暂存区，以下命令可将修改回退到工作区，此时就回到了上一个场景的情况</p>
-<pre><code class="bash">git reset HEAD &lt;filename&gt;</code></pre>
-</li>
-</ul>
+<h2 id="2-基于注解的配置"><a href="#2-基于注解的配置" class="headerlink" title="2.基于注解的配置"></a>2.基于注解的配置</h2><ol>
+<li>配置事务管理器</li>
+<li>开启<code>Spring</code>对注解事务的支持<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tx:annotation-driven</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span><span class="tag">&lt;/<span class="name">tx:annotation-driven</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>在需要支持事务的地方（类或方法前）使用<code>@Transactional</code>注解。注解中的属性可以设置事务的属性（隔离级别、传播行为、只读等）</li>
+</ol>
 
       
     </div>
@@ -488,7 +442,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Git/" rel="tag"># Git</a>
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
           
         </div>
       
@@ -501,8 +457,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/01/19/windows-ubuntu/" rel="next" title="Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决">
-                <i class="fa fa-chevron-left"></i> Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决
+              <a href="/2020/09/17/spring-aop/" rel="next" title="Spring——AOP">
+                <i class="fa fa-chevron-left"></i> Spring——AOP
               </a>
             
           </div>
@@ -510,10 +466,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/09/10/spring-ioc/" rel="prev" title="Spring——IoC容器">
-                Spring——IoC容器 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -668,7 +620,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本结构"><span class="nav-number">1.</span> <span class="nav-text">基本结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多人协作开发"><span class="nav-number">2.</span> <span class="nav-text">多人协作开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用命令"><span class="nav-number">3.</span> <span class="nav-text">常用命令</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring——事务"><span class="nav-number">1.</span> <span class="nav-text">Spring——事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-基于XML的声明式事务控制"><span class="nav-number">1.1.</span> <span class="nav-text">1. 基于XML的声明式事务控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-基于注解的配置"><span class="nav-number">1.2.</span> <span class="nav-text">2.基于注解的配置</span></a></li></ol></li></ol></div>
             
 
           </div>

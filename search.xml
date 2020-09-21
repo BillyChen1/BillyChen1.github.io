@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Spring——事务</title>
+    <url>/2020/09/21/spring-tx/</url>
+    <content><![CDATA[<h1 id="Spring——事务"><a href="#Spring——事务" class="headerlink" title="Spring——事务"></a>Spring——事务</h1><h2 id="1-基于XML的声明式事务控制"><a href="#1-基于XML的声明式事务控制" class="headerlink" title="1. 基于XML的声明式事务控制"></a>1. 基于XML的声明式事务控制</h2><ol>
+<li><p>配置事务管理器</p>
+</li>
+<li><p>配置事务的通知</p>
+<p> 属性<br> <code>id</code>: 事务通知的唯一标识<br> <code>transaction-manager</code>给事务通知提供一个事务管理器的引用</p>
+</li>
+<li><p>配置AOP中的切入点表达式</p>
+</li>
+<li><p>建立事务通知和切入点表达式的关系</p>
+</li>
+<li><p>配置事务的属性(在事务通知tx:advice标签内部配置)</p>
+</li>
+</ol>
+<a id="more"></a>
+<blockquote>
+<p><code>isolation</code>：事务隔离界别，默认值<code>DEFAULT</code>，表示使用数据库的默认隔离级别</p>
+<p><code>propagation</code>：指定传播行为默认值为<code>REQUIRED</code>，表示一定有事务（增删改的选择，而查询方法可选择<code>SUPPORTS</code>）</p>
+<p><code>read-only</code>：指定事务是否只读，只有查询方法才能设置为<code>true</code>，默认值为<code>false</code><br><code>timeout</code>：指定事务的超时时间 默认值-1 永不超时</p>
+<p><code>rollback-for</code>：指定一个异常，产生该异常时事务回滚，产生其他异常时不回滚。没有默认值，表示任何异常都回滚</p>
+<p><code>no-rollback-for</code>：指定一个异常，产生该异常时事务不回滚，产生其他异常时事务回滚。没有默认值，表示任何异常都回滚</p>
+</blockquote>
+<p>以下是一个配置的例子</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"transactionManager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">"txAdvice"</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置事务属性--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"*"</span> <span class="attr">propagation</span>=<span class="string">"REQUIRED"</span> <span class="attr">read-only</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--通配符指以find开头的所有方法--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"find*"</span> <span class="attr">propagation</span>=<span class="string">"SUPPORTS"</span> <span class="attr">read-only</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置切入点表达式--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"pt1"</span> <span class="attr">expression</span>=<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:pointcut</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--建立切入点和事务通知的关系--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">advice-ref</span>=<span class="string">"txAdvice"</span> <span class="attr">pointcut-ref</span>=<span class="string">"pt1"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:advisor</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-基于注解的配置"><a href="#2-基于注解的配置" class="headerlink" title="2.基于注解的配置"></a>2.基于注解的配置</h2><ol>
+<li>配置事务管理器</li>
+<li>开启<code>Spring</code>对注解事务的支持<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tx:annotation-driven</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span><span class="tag">&lt;/<span class="name">tx:annotation-driven</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>在需要支持事务的地方（类或方法前）使用<code>@Transactional</code>注解。注解中的属性可以设置事务的属性（隔离级别、传播行为、只读等）</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Spring</category>
+      </categories>
+      <tags>
+        <tag>Spring</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Spring——AOP</title>
     <url>/2020/09/17/spring-aop/</url>
     <content><![CDATA[<h1 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h1><h2 id="0-思想"><a href="#0-思想" class="headerlink" title="0. 思想"></a>0. 思想</h2><p>运用动态代理的方式对核心业务类的方法进行增强，对核心逻辑和非核心逻辑进行隔离，把非核心逻辑织入到核心业务逻辑之中。开发人员在开发时可以专注于核心业务逻辑，使各个业务逻辑之间的耦合度降低，提高程序的可复用性。</p>
