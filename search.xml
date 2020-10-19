@@ -1,427 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>Spring——事务</title>
-    <url>/2020/09/21/spring-tx/</url>
-    <content><![CDATA[<h1 id="Spring——事务"><a href="#Spring——事务" class="headerlink" title="Spring——事务"></a>Spring——事务</h1><h2 id="1-基于XML的声明式事务控制"><a href="#1-基于XML的声明式事务控制" class="headerlink" title="1. 基于XML的声明式事务控制"></a>1. 基于XML的声明式事务控制</h2><ol>
-<li><p>配置事务管理器</p>
-</li>
-<li><p>配置事务的通知</p>
-<p> 属性<br> <code>id</code>: 事务通知的唯一标识<br> <code>transaction-manager</code>给事务通知提供一个事务管理器的引用</p>
-</li>
-<li><p>配置AOP中的切入点表达式</p>
-</li>
-<li><p>建立事务通知和切入点表达式的关系</p>
-</li>
-<li><p>配置事务的属性(在事务通知tx:advice标签内部配置)</p>
-</li>
-</ol>
-<a id="more"></a>
-<blockquote>
-<p><code>isolation</code>：事务隔离界别，默认值<code>DEFAULT</code>，表示使用数据库的默认隔离级别</p>
-<p><code>propagation</code>：指定传播行为默认值为<code>REQUIRED</code>，表示一定有事务（增删改的选择，而查询方法可选择<code>SUPPORTS</code>）</p>
-<p><code>read-only</code>：指定事务是否只读，只有查询方法才能设置为<code>true</code>，默认值为<code>false</code><br><code>timeout</code>：指定事务的超时时间 默认值-1 永不超时</p>
-<p><code>rollback-for</code>：指定一个异常，产生该异常时事务回滚，产生其他异常时不回滚。没有默认值，表示任何异常都回滚</p>
-<p><code>no-rollback-for</code>：指定一个异常，产生该异常时事务不回滚，产生其他异常时事务回滚。没有默认值，表示任何异常都回滚</p>
-</blockquote>
-<p>以下是一个配置的例子</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"transactionManager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">"txAdvice"</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置事务属性--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"*"</span> <span class="attr">propagation</span>=<span class="string">"REQUIRED"</span> <span class="attr">read-only</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--通配符指以find开头的所有方法--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"find*"</span> <span class="attr">propagation</span>=<span class="string">"SUPPORTS"</span> <span class="attr">read-only</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置切入点表达式--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"pt1"</span> <span class="attr">expression</span>=<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:pointcut</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--建立切入点和事务通知的关系--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">advice-ref</span>=<span class="string">"txAdvice"</span> <span class="attr">pointcut-ref</span>=<span class="string">"pt1"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:advisor</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="2-基于注解的配置"><a href="#2-基于注解的配置" class="headerlink" title="2.基于注解的配置"></a>2.基于注解的配置</h2><ol>
-<li>配置事务管理器</li>
-<li>开启<code>Spring</code>对注解事务的支持<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tx:annotation-driven</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span><span class="tag">&lt;/<span class="name">tx:annotation-driven</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
-<li>在需要支持事务的地方（类或方法前）使用<code>@Transactional</code>注解。注解中的属性可以设置事务的属性（隔离级别、传播行为、只读等）</li>
-</ol>
-]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>Spring——事务</title>
+      <link href="/2020/09/21/spring-tx/"/>
+      <url>/2020/09/21/spring-tx/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Spring——事务"><a href="#Spring——事务" class="headerlink" title="Spring——事务"></a>Spring——事务</h1><h2 id="1-基于XML的声明式事务控制"><a href="#1-基于XML的声明式事务控制" class="headerlink" title="1. 基于XML的声明式事务控制"></a>1. 基于XML的声明式事务控制</h2><ol><li><p>配置事务管理器</p></li><li><p>配置事务的通知</p><p> 属性<br> <code>id</code>: 事务通知的唯一标识<br> <code>transaction-manager</code>给事务通知提供一个事务管理器的引用</p></li><li><p>配置AOP中的切入点表达式</p></li><li><p>建立事务通知和切入点表达式的关系</p></li><li><p>配置事务的属性(在事务通知tx:advice标签内部配置)</p></li></ol><a id="more"></a><blockquote><p><code>isolation</code>：事务隔离界别，默认值<code>DEFAULT</code>，表示使用数据库的默认隔离级别</p><p><code>propagation</code>：指定传播行为默认值为<code>REQUIRED</code>，表示一定有事务（增删改的选择，而查询方法可选择<code>SUPPORTS</code>）</p><p><code>read-only</code>：指定事务是否只读，只有查询方法才能设置为<code>true</code>，默认值为<code>false</code><br><code>timeout</code>：指定事务的超时时间 默认值-1 永不超时</p><p><code>rollback-for</code>：指定一个异常，产生该异常时事务回滚，产生其他异常时不回滚。没有默认值，表示任何异常都回滚</p><p><code>no-rollback-for</code>：指定一个异常，产生该异常时事务不回滚，产生其他异常时事务回滚。没有默认值，表示任何异常都回滚</p></blockquote><p>以下是一个配置的例子</p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"transactionManager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">tx:advice</span> <span class="attr">id</span>=<span class="string">"txAdvice"</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置事务属性--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"*"</span> <span class="attr">propagation</span>=<span class="string">"REQUIRED"</span> <span class="attr">read-only</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--通配符指以find开头的所有方法--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tx:method</span> <span class="attr">name</span>=<span class="string">"find*"</span> <span class="attr">propagation</span>=<span class="string">"SUPPORTS"</span> <span class="attr">read-only</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tx:attributes</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tx:advice</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--配置切入点表达式--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"pt1"</span> <span class="attr">expression</span>=<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:pointcut</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--建立切入点和事务通知的关系--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:advisor</span> <span class="attr">advice-ref</span>=<span class="string">"txAdvice"</span> <span class="attr">pointcut-ref</span>=<span class="string">"pt1"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:advisor</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br></pre></td></tr></table></figure><h2 id="2-基于注解的配置"><a href="#2-基于注解的配置" class="headerlink" title="2.基于注解的配置"></a>2.基于注解的配置</h2><ol><li>配置事务管理器</li><li>开启<code>Spring</code>对注解事务的支持<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tx:annotation-driven</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span><span class="tag">&lt;/<span class="name">tx:annotation-driven</span>&gt;</span></span><br></pre></td></tr></table></figure></li><li>在需要支持事务的地方（类或方法前）使用<code>@Transactional</code>注解。注解中的属性可以设置事务的属性（隔离级别、传播行为、只读等）</li></ol><h2 id="3-事务隔离级别和传播行为"><a href="#3-事务隔离级别和传播行为" class="headerlink" title="3.事务隔离级别和传播行为"></a>3.事务隔离级别和传播行为</h2><h3 id="1-隔离级别"><a href="#1-隔离级别" class="headerlink" title="1. 隔离级别"></a>1. 隔离级别</h3><ol><li>未提交读：可以读取未提交的数据</li><li>读写提交：只能读取已提交的数据，解决脏读问题（<code>Oracle</code>默认级别）</li><li>可重复读：只能读取其他事务提交修改后的数据，解决不可重复读问题（<code>MySQL</code>默认级别）</li><li>串行化：解决幻读问题</li></ol><h2 id="2-传播行为"><a href="#2-传播行为" class="headerlink" title="2.传播行为"></a>2.传播行为</h2><ol><li><code>REQUIRED</code>:如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。一般的选择（默认值）</li><li><code>SUPPORTS</code>:支持当前事务，如果当前没有事务，就以非事务方式执行（没有事务）</li><li><code>MANDATORY</code>：使用当前的事务，如果当前没有事务，就抛出异常</li><li><code>REQUERS_NEW</code>:新建事务，如果当前在事务中，把当前事务挂起。</li><li><code>NOT_SUPPORTED</code>:以非事务方式执行操作，如果当前存在事务，就把当前事务挂起</li><li><code>NEVER</code>:以非事务方式运行，如果当前存在事务，抛出异常</li><li><code>NESTED</code>:如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行 <code>REQUIRED</code> 类似的操作。</li></ol>]]></content>
+      
+      
       <categories>
-        <category>Spring</category>
+          
+          <category> Spring </category>
+          
       </categories>
-      <tags>
-        <tag>Spring</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Spring——AOP</title>
-    <url>/2020/09/17/spring-aop/</url>
-    <content><![CDATA[<h1 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h1><h2 id="0-思想"><a href="#0-思想" class="headerlink" title="0. 思想"></a>0. 思想</h2><p>运用动态代理的方式对核心业务类的方法进行增强，对核心逻辑和非核心逻辑进行隔离，把非核心逻辑织入到核心业务逻辑之中。开发人员在开发时可以专注于核心业务逻辑，使各个业务逻辑之间的耦合度降低，提高程序的可复用性。</p>
-<h2 id="1-AOP的术语和细节"><a href="#1-AOP的术语和细节" class="headerlink" title="1. AOP的术语和细节"></a>1. AOP的术语和细节</h2><ol>
-<li><p><code>Jointpoint</code>（连接点）</p>
-<p> 被拦截的方法，通常是业务层的所有方法。</p>
-</li>
-<li><p><code>Pointcut</code>（切入点）</p>
-<p> 并不是所有业务层的方法都需要被拦截增强。那些需要被增强的方法是切入点。</p>
-</li>
-<li><p><code>Advice</code>（通知/增强）</p>
-<p> 指拦截到的<code>Jointpoint</code>之后需要做的事情。通知包括前置通知、后置通知、异常通知、最终通知、环绕通知。</p>
-</li>
-<li><p><code>Taeget</code>（目标对象）</p>
-<p> 被代理的对象。</p>
-</li>
-<li><p><code>Weaving</code>（织入）</p>
-<p> 是指把增强应用到目标对象来创建代理对象的过程。</p>
-</li>
-<li><p><code>Proxy</code>（代理）</p>
-<p> 一个类被<code>AOP</code>织入增强后，产生的一个结果代理类。</p>
-</li>
-<li><p><code>Aspect</code>（切面）</p>
-<p> 是切入点和通知的结合。（需要手动配置）</p>
-</li>
-</ol>
-<a id="more"></a>
-
-<h2 id="2-XML配置AOP步骤"><a href="#2-XML配置AOP步骤" class="headerlink" title="2. XML配置AOP步骤"></a>2. XML配置AOP步骤</h2><ol>
-<li><p>把通知<code>bean</code>交给<code>spring</code>管理</p>
-</li>
-<li><p>使用<code>app:config</code>标签表明开始<code>AOP</code>配置</p>
-</li>
-<li><p>使用<code>aop:aspect</code>标签表明开始配置切面</p>
-<p> <code>id</code>:切面的唯一标识<br> <code>ref</code>:指定通知类bean的id</p>
-</li>
-<li><p>在<code>aop:aspect</code>标签内部使用对应标签来配置通知的类型,比如<code>aop:before</code>表示配置前置通知。<br><code>method</code>属性用于指定通知类中哪个方法是前置通知<br><code>pointcut</code>属性用于指定切入点表达式，表示对业务层哪些方法增强</p>
-</li>
-<li><p>切入点表达式写法：</p>
-<ul>
-<li><p>关键字：<code>execution(表达式)</code></p>
-</li>
-<li><p>表达式：访问修饰符 返回值 全限定类名.方法名(参数列表)</p>
-</li>
-<li><p>标准写法：<code>public void com.billychen.service.impl.AccountServiceImpl.saveAccount()</code></p>
-</li>
-<li><p>访问修饰符可以省略 <code>void com.billychen.service.impl.AccountServiceImpl.saveAccount()</code></p>
-</li>
-<li><p>返回值可以使用通配符，表示任意返回值 <code>* com.billychen.service.impl.AccountServiceImpl.saveAccount()</code></p>
-</li>
-<li><p>包名可以使用通配符表示任意包，但是有几个包就要写几个<code>*.</code>  比如<code>* *.*.*.*.AccountServiceImpl.saveAccount()</code></p>
-</li>
-<li><p>包名可以使用..表示当前包及其子包 <code>* *..AccountServiceImpl.saveAccount()</code></p>
-</li>
-<li><p>类名和方法名均可以使用<code>*</code>实现通配</p>
-</li>
-<li><p>参数列表写数据类型或全限定类名</p>
-</li>
-<li><p>可以使用通配符表示任意参数类型，但必须有参数。也可以使用<code>..</code>表示有无参数均可以<br>全通配写法：<code>* *..*.*(..)</code></p>
-</li>
-<li><p>实际开发的通常写法是切到业务层实现类的所有方法<code>* com.billychen.service.impl.*.*(..)</code></p>
-</li>
-</ul>
-</li>
-</ol>
-<p>以下是一个实例：</p>
-<p>在该实例中，<code>Logger</code>是一个通知类，<code>AccountServiceImpl</code>是一个核心业务的类。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:aop</span>=<span class="string">"http://www.springframework.org/schema/aop"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans</span></span></span><br><span class="line"><span class="tag"><span class="string">        https://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/aop</span></span></span><br><span class="line"><span class="tag"><span class="string">        https://www.springframework.org/schema/aop/spring-aop.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置service对象--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"accountService"</span> <span class="attr">class</span>=<span class="string">"com.billychen.service.impl.AccountServiceImpl"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- instructs the container to proxy the surrounding bean --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">aop:scoped-proxy</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置Logger对象--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"logger"</span> <span class="attr">class</span>=<span class="string">"com.billychen.utils.Logger"</span>&gt;</span><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置AOP--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--配置切面--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">aop:aspect</span> <span class="attr">id</span>=<span class="string">"logAdvice"</span> <span class="attr">ref</span>=<span class="string">"logger"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:before</span> <span class="attr">method</span>=<span class="string">"beforePrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:before</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:after-returning</span> <span class="attr">method</span>=<span class="string">"afterReturningPrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:after-returning</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:after-throwing</span> <span class="attr">method</span>=<span class="string">"afterThrowingPrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:after-throwing</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:after</span> <span class="attr">method</span>=<span class="string">"afterPrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:after</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">&lt;!--仅限当前切面使用</span></span><br><span class="line"><span class="comment">                如果写在切面之外，则可以供所有切面使用（要写在切面定义之前）--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"ptl"</span> <span class="attr">expression</span>=<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:pointcut</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">aop:aspect</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="3-使用注解"><a href="#3-使用注解" class="headerlink" title="3.使用注解"></a>3.使用注解</h2><p>配置类如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.billychen.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.ComponentScan;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.EnableAspectJAutoProxy;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 配置类</span></span><br><span class="line"><span class="comment"> * 开启AOP注解</span></span><br><span class="line"><span class="comment"> * 指定创建IoC容器时需要扫描的包</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@EnableAspectJAutoProxy</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(basePackages = <span class="string">"com.billychen"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>Logger</code>类如下（即通知类）</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.billychen.utils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.JoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.ProceedingJoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 模拟记录日志的工具类，提供了共用代码（通知）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Logger</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//指定切入点方法</span></span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ptl</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 前置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//可以获取切点方法的参数</span></span><br><span class="line">    <span class="meta">@Before</span>(<span class="string">"ptl() &amp;&amp; args(i)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">beforePrintLog</span><span class="params">(JoinPoint joinPoint, <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        Object[] args = joinPoint.getArgs();</span><br><span class="line">        System.out.println(<span class="string">"参数为"</span> + args[<span class="number">0</span>]);</span><br><span class="line">        System.out.println(<span class="string">"前置：Logger类中的BeforePrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 后置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@AfterReturning</span>(<span class="string">"ptl()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterReturningPrintLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"后置：Logger类中的AfterReturningPrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 异常</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@AfterThrowing</span>(<span class="string">"ptl()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterThrowingPrintLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"异常：Logger类中的AfterThrowingPrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 最终</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@After</span>(<span class="string">"ptl()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPrintLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"最终：Logger类中的AfterPrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 环绕</span></span><br><span class="line"><span class="comment">     * ProceedingJoinPoint的方法proceed()可以明确调用切入点的方法</span></span><br><span class="line"><span class="comment">     * 环绕通知 是spring提供的一种可以在代码中手动控制增强方法何时执行的方式</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//@Around("ptl()")</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">aroundPrintLog</span><span class="params">(ProceedingJoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//明确调用业务层方法</span></span><br><span class="line">        Object returnValue = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//得到方法执行的参数</span></span><br><span class="line">            Object[] args = joinPoint.getArgs();</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——前置"</span>);</span><br><span class="line">            returnValue = joinPoint.proceed(args);</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——后置"</span>);</span><br><span class="line">            <span class="keyword">return</span> returnValue;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable throwable) &#123;</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——异常"</span>);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(throwable);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——最终"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+        <tags>
+            
+            <tag> Spring </tag>
+            
+            <tag> Java </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Spring——AOP</title>
+      <link href="/2020/09/17/spring-aop/"/>
+      <url>/2020/09/17/spring-aop/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h1><h2 id="0-思想"><a href="#0-思想" class="headerlink" title="0. 思想"></a>0. 思想</h2><p>运用动态代理的方式对核心业务类的方法进行增强，对核心逻辑和非核心逻辑进行隔离，把非核心逻辑织入到核心业务逻辑之中。开发人员在开发时可以专注于核心业务逻辑，使各个业务逻辑之间的耦合度降低，提高程序的可复用性。</p><h2 id="1-AOP的术语和细节"><a href="#1-AOP的术语和细节" class="headerlink" title="1. AOP的术语和细节"></a>1. AOP的术语和细节</h2><ol><li><p><code>Jointpoint</code>（连接点）</p><p> 被拦截的方法，通常是业务层的所有方法。</p></li><li><p><code>Pointcut</code>（切入点）</p><p> 并不是所有业务层的方法都需要被拦截增强。那些需要被增强的方法是切入点。</p></li><li><p><code>Advice</code>（通知/增强）</p><p> 指拦截到的<code>Jointpoint</code>之后需要做的事情。通知包括前置通知、后置通知、异常通知、最终通知、环绕通知。</p></li><li><p><code>Taeget</code>（目标对象）</p><p> 被代理的对象。</p></li><li><p><code>Weaving</code>（织入）</p><p> 是指把增强应用到目标对象来创建代理对象的过程。</p></li><li><p><code>Proxy</code>（代理）</p><p> 一个类被<code>AOP</code>织入增强后，产生的一个结果代理类。</p></li><li><p><code>Aspect</code>（切面）</p><p> 是切入点和通知的结合。（需要手动配置）</p></li></ol><a id="more"></a><h2 id="2-XML配置AOP步骤"><a href="#2-XML配置AOP步骤" class="headerlink" title="2. XML配置AOP步骤"></a>2. XML配置AOP步骤</h2><ol><li><p>把通知<code>bean</code>交给<code>spring</code>管理</p></li><li><p>使用<code>app:config</code>标签表明开始<code>AOP</code>配置</p></li><li><p>使用<code>aop:aspect</code>标签表明开始配置切面</p><p> <code>id</code>:切面的唯一标识<br> <code>ref</code>:指定通知类bean的id</p></li><li><p>在<code>aop:aspect</code>标签内部使用对应标签来配置通知的类型,比如<code>aop:before</code>表示配置前置通知。<br><code>method</code>属性用于指定通知类中哪个方法是前置通知<br><code>pointcut</code>属性用于指定切入点表达式，表示对业务层哪些方法增强</p></li><li><p>切入点表达式写法：</p><ul><li><p>关键字：<code>execution(表达式)</code></p></li><li><p>表达式：访问修饰符 返回值 全限定类名.方法名(参数列表)</p></li><li><p>标准写法：<code>public void com.billychen.service.impl.AccountServiceImpl.saveAccount()</code></p></li><li><p>访问修饰符可以省略 <code>void com.billychen.service.impl.AccountServiceImpl.saveAccount()</code></p></li><li><p>返回值可以使用通配符，表示任意返回值 <code>* com.billychen.service.impl.AccountServiceImpl.saveAccount()</code></p></li><li><p>包名可以使用通配符表示任意包，但是有几个包就要写几个<code>*.</code>  比如<code>* *.*.*.*.AccountServiceImpl.saveAccount()</code></p></li><li><p>包名可以使用..表示当前包及其子包 <code>* *..AccountServiceImpl.saveAccount()</code></p></li><li><p>类名和方法名均可以使用<code>*</code>实现通配</p></li><li><p>参数列表写数据类型或全限定类名</p></li><li><p>可以使用通配符表示任意参数类型，但必须有参数。也可以使用<code>..</code>表示有无参数均可以<br>全通配写法：<code>* *..*.*(..)</code></p></li><li><p>实际开发的通常写法是切到业务层实现类的所有方法<code>* com.billychen.service.impl.*.*(..)</code></p></li></ul></li></ol><p>以下是一个实例：</p><p>在该实例中，<code>Logger</code>是一个通知类，<code>AccountServiceImpl</code>是一个核心业务的类。</p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:aop</span>=<span class="string">"http://www.springframework.org/schema/aop"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans</span></span></span><br><span class="line"><span class="tag"><span class="string">        https://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">        http://www.springframework.org/schema/aop</span></span></span><br><span class="line"><span class="tag"><span class="string">        https://www.springframework.org/schema/aop/spring-aop.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置service对象--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"accountService"</span> <span class="attr">class</span>=<span class="string">"com.billychen.service.impl.AccountServiceImpl"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- instructs the container to proxy the surrounding bean --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">aop:scoped-proxy</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置Logger对象--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"logger"</span> <span class="attr">class</span>=<span class="string">"com.billychen.utils.Logger"</span>&gt;</span><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--配置AOP--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:config</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--配置切面--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">aop:aspect</span> <span class="attr">id</span>=<span class="string">"logAdvice"</span> <span class="attr">ref</span>=<span class="string">"logger"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:before</span> <span class="attr">method</span>=<span class="string">"beforePrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:before</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:after-returning</span> <span class="attr">method</span>=<span class="string">"afterReturningPrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:after-returning</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:after-throwing</span> <span class="attr">method</span>=<span class="string">"afterThrowingPrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:after-throwing</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:after</span> <span class="attr">method</span>=<span class="string">"afterPrintLog"</span> <span class="attr">pointcut-ref</span>=<span class="string">"ptl"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:after</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">&lt;!--仅限当前切面使用</span></span><br><span class="line"><span class="comment">                如果写在切面之外，则可以供所有切面使用（要写在切面定义之前）--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">aop:pointcut</span> <span class="attr">id</span>=<span class="string">"ptl"</span> <span class="attr">expression</span>=<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:pointcut</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">aop:aspect</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">aop:config</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure><h2 id="3-使用注解"><a href="#3-使用注解" class="headerlink" title="3.使用注解"></a>3.使用注解</h2><p>配置类如下：</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.billychen.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.ComponentScan;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.EnableAspectJAutoProxy;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 配置类</span></span><br><span class="line"><span class="comment"> * 开启AOP注解</span></span><br><span class="line"><span class="comment"> * 指定创建IoC容器时需要扫描的包</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@EnableAspectJAutoProxy</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(basePackages = <span class="string">"com.billychen"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p><code>Logger</code>类如下（即通知类）</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.billychen.utils;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.JoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.ProceedingJoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 模拟记录日志的工具类，提供了共用代码（通知）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Logger</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//指定切入点方法</span></span><br><span class="line">    <span class="meta">@Pointcut</span>(<span class="string">"execution(* com.billychen.service.impl.*.*(..))"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ptl</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 前置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//可以获取切点方法的参数</span></span><br><span class="line">    <span class="meta">@Before</span>(<span class="string">"ptl() &amp;&amp; args(i)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">beforePrintLog</span><span class="params">(JoinPoint joinPoint, <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">        Object[] args = joinPoint.getArgs();</span><br><span class="line">        System.out.println(<span class="string">"参数为"</span> + args[<span class="number">0</span>]);</span><br><span class="line">        System.out.println(<span class="string">"前置：Logger类中的BeforePrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 后置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@AfterReturning</span>(<span class="string">"ptl()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterReturningPrintLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"后置：Logger类中的AfterReturningPrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 异常</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@AfterThrowing</span>(<span class="string">"ptl()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterThrowingPrintLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"异常：Logger类中的AfterThrowingPrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 最终</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@After</span>(<span class="string">"ptl()"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPrintLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"最终：Logger类中的AfterPrintLog方法开始记录日志！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 环绕</span></span><br><span class="line"><span class="comment">     * ProceedingJoinPoint的方法proceed()可以明确调用切入点的方法</span></span><br><span class="line"><span class="comment">     * 环绕通知 是spring提供的一种可以在代码中手动控制增强方法何时执行的方式</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//@Around("ptl()")</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">aroundPrintLog</span><span class="params">(ProceedingJoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//明确调用业务层方法</span></span><br><span class="line">        Object returnValue = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//得到方法执行的参数</span></span><br><span class="line">            Object[] args = joinPoint.getArgs();</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——前置"</span>);</span><br><span class="line">            returnValue = joinPoint.proceed(args);</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——后置"</span>);</span><br><span class="line">            <span class="keyword">return</span> returnValue;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable throwable) &#123;</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——异常"</span>);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(throwable);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"环绕通知——最终"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
       <categories>
-        <category>Spring</category>
+          
+          <category> Spring </category>
+          
       </categories>
-      <tags>
-        <tag>Spring</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Spring——IoC容器</title>
-    <url>/2020/09/10/spring-ioc/</url>
-    <content><![CDATA[<h1 id="Spring-IoC容器"><a href="#Spring-IoC容器" class="headerlink" title="Spring IoC容器"></a>Spring IoC容器</h1><h2 id="1-思想"><a href="#1-思想" class="headerlink" title="1.思想"></a>1.思想</h2><p><code>bean</code>对象的创建、依赖关系交给<code>Ioc</code>容器来管理，无需手动<code>new</code>对象，方便解耦，便于开发。</p>
-<h2 id="2-IoC容器"><a href="#2-IoC容器" class="headerlink" title="2.IoC容器"></a>2.IoC容器</h2><p><code>Spring</code>容器的最顶层接口是<code>BeanFactory</code>，实际开发中常用<code>ApplicationContext</code>。</p>
-<p>两个接口的区别：</p>
-<ul>
-<li><code>ApplicationContext</code>：立即加载。读取配置文件后马上创建对象放入容器。</li>
-<li><code>BeanFactory</code>：延迟加载。什么时候根据<code>id</code>获取对象，什么时候才真正创建对象。</li>
-</ul>
-<p><code>ApplicationContext</code>的三个常用实现类</p>
-<ul>
-<li><p><code>ClassPathApplicationContext</code>：加载类路径下的配置文件。</p>
-</li>
-<li><p><code>FileSystemXmlApplicationContext</code>：加载磁盘任意路径下的配置文件。</p>
-</li>
-<li><p><code>AnnotationConfigApplicationContext</code>：读取注解 创建容器。</p>
-</li>
-</ul>
-<h2 id="3-Bean"><a href="#3-Bean" class="headerlink" title="3.Bean"></a>3.Bean</h2><h3 id="1-创建bean的三种方式"><a href="#1-创建bean的三种方式" class="headerlink" title="1.创建bean的三种方式"></a>1.创建bean的三种方式</h3><ol>
-<li>使用默认的无参构造器（如果没有无参构造器，则报错）</li>
-<li>使用静态工厂的静态方法创建对象</li>
-<li>使用实例工厂的方法创建对象</li>
-</ol>
-<a id="more"></a>
-
-<h3 id="2-bean对象的生命周期"><a href="#2-bean对象的生命周期" class="headerlink" title="2.bean对象的生命周期"></a>2.bean对象的生命周期</h3><ol>
-<li>单例<ul>
-<li>出生：当容器创建时对象出生</li>
-<li>活着：只要容器还在，对象一直活着</li>
-<li>死亡：容器销毁，对象消亡</li>
-<li>总结：单例对象的生命周期与容器相同</li>
-</ul>
-</li>
-<li>多例<ul>
-<li>出生：使用对象时才创建（延迟加载）</li>
-<li>活着：对象只要在使用过程中就一直活着</li>
-<li>死亡：当对象长时间不用且无其他对象引用时，由<code>GC</code>回收</li>
-</ul>
-</li>
-</ol>
-<h3 id="3-依赖注入"><a href="#3-依赖注入" class="headerlink" title="3.依赖注入"></a>3.依赖注入</h3><p> 依赖关系的管理交给Spring来维护在当前类需要用到其他类的对象时，由Spring为我们提供，只需在配置文件中说明。</p>
-<p>依赖注入的数据有三类：</p>
-<ol>
-<li>基本类型和<code>String</code></li>
-<li>其他<code>bean</code>类型（在配置文件中或注解中配置过的bean）</li>
-<li>复杂类型（集合类型）</li>
-</ol>
-<p>注入的方式有三种：</p>
-<ol>
-<li>使用构造方法</li>
-<li>使用<code>set</code>方法</li>
-<li>使用注解</li>
-</ol>
-<h3 id="4-常用注解"><a href="#4-常用注解" class="headerlink" title="4.常用注解"></a>4.常用注解</h3><ol>
-<li>用于创建对象的注解（作用类似于<code>bean</code>标签）</li>
-</ol>
-<ul>
-<li><code>@Component</code></li>
-</ul>
-<blockquote>
-<p><strong>作用</strong>：写在类之前，把当前类的对象注入到容器中</p>
-<p><strong>属性</strong>：value 指定bean的id 默认值是当前类名首字母改为小写</p>
-</blockquote>
-<ul>
-<li><p><code>@Controller</code>：一般用在表现层</p>
-</li>
-<li><p><code>@Serive</code>：一般用在业务层</p>
-</li>
-<li><p><code>@Repository</code>：一般用在持久层</p>
-<p>  以上三个注解的作用与属性和<code>Component</code>一样，<br>他们三个是<code>Spring</code>框架提供的明确的三层使用的注解，使三层对象更加清晰。</p>
-</li>
-</ul>
-<hr>
-<ol start="2">
-<li>用于注入数据的注解（作用相当于<code>properties</code>标签）</li>
-</ol>
-<ul>
-<li><p><code>@Autowired</code>:</p>
-<blockquote>
-<p><strong>作用</strong>：自动按照类型注入。只要容器中有唯一的一个bean对象类型和要注入的变量类型匹配，就可以注入成功</p>
-<p><strong>使用的位置</strong>：变量上或方法上</p>
-<p><strong>注意</strong>：如果容器中没有任何bean的类型匹配，则报错。<br>如果容器中有多个<code>bean</code>的类型和要注入的变量类型匹配，如果要注入的变量名称和<code>bean</code>的<code>id</code>相匹配，则注入之，否则报错。<br>另外，使用注解的方法注入时，set方法不是必须的</p>
-</blockquote>
-</li>
-<li><p><code>@Qualifier</code></p>
-<blockquote>
-<p><strong>作用</strong>：在按照类中注入的基础上再按名称注入。</p>
-<p><strong>注意</strong>：它给类成员注入时不能单独使用，必须和<code>Autowired</code>配合使用，但是在给方法参数注入时可以单独使用。</p>
-<p><strong>属性</strong>：<code>value</code> 用于指定注入<code>bean</code>的<code>id</code></p>
-</blockquote>
-</li>
-<li><p><code>@Resource</code></p>
-<blockquote>
-<p><strong>作用</strong>：直接按照<code>bean</code>的id注入，可以独立使用，不需要再和<code>Autowired</code>一起使用</p>
-<p><strong>属性</strong>：name 用于指定注入<code>bean</code>的<code>id</code></p>
-<p><strong>注意</strong>：以上三个注解只能注入其他<code>bean</code>类型的数据，而基本类型和<code>String</code>类型无法使用上述注解</p>
-</blockquote>
-</li>
-</ul>
-<p>另外，集合类型注入只能使用xml</p>
-<ul>
-<li><code>@Value</code><blockquote>
-<p><strong>作用</strong>：用于注入基本类型和<code>String</code>类型的数据</p>
-<p><strong>属性</strong>：<code>value</code>：用于指定数据的值</p>
-<p>它可以使用<code>Spring</code>中的<code>SpEL</code>。<code>SpEL</code>写法：<code>${表达式}</code></p>
-</blockquote>
-</li>
-</ul>
-<hr>
-<ol start="3">
-<li>一些和配置有关的注解</li>
-</ol>
-<ul>
-<li><p>可以使用配置类以代替<code>bean.xml</code>配置文件的作用</p>
-</li>
-<li><p><code>@Configuration</code></p>
-<blockquote>
-<p><strong>作用</strong>：指定当前类是一个配置类</p>
-<p><strong>细节</strong>：当配置类作为<code>AnnotationConfigApplicationContext</code>对象创建的参数时，可以不写。</p>
-</blockquote>
-</li>
-<li><p><code>@ComponentScan</code></p>
-<blockquote>
-<p><strong>作用</strong>：指定创建容器时要扫描的包</p>
-</blockquote>
-</li>
-<li><p><code>@Bean</code></p>
-<blockquote>
-<p><strong>作用</strong>：用在方法前，将方法的返回值作为<code>bean</code>对象存入<code>IoC</code>容器</p>
-<p><strong>属性</strong>：<code>name</code> 用于指定<code>bean</code>的<code>id</code> 默认值为当前方法名</p>
-<p><strong>细节</strong>：使用注解配置方法时，如果方法有参数，<code>Spring</code>框架会去容器中查找是否有该类型的<code>bean</code>，查找方式和<code>Autowired</code>相同</p>
-</blockquote>
-</li>
-<li><p><code>@Import</code></p>
-<blockquote>
-<p><strong>作用</strong>：用于导入其他配置类</p>
-<p><strong>属性</strong>：<code>value</code> 用于指定其他配置类的字节码</p>
-</blockquote>
-</li>
-<li><p><code>@PropertySource</code></p>
-<blockquote>
-<p><strong>作用</strong>：用于指定properties文件的位置</p>
-<p><strong>属性</strong>：<code>value</code> 指定文件名称和路径<br>关键字<code>classpath</code>表示类路径下</p>
-</blockquote>
-</li>
-</ul>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Spring </tag>
+            
+            <tag> Java </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Spring——IoC容器</title>
+      <link href="/2020/09/10/spring-ioc/"/>
+      <url>/2020/09/10/spring-ioc/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Spring-IoC容器"><a href="#Spring-IoC容器" class="headerlink" title="Spring IoC容器"></a>Spring IoC容器</h1><h2 id="1-思想"><a href="#1-思想" class="headerlink" title="1.思想"></a>1.思想</h2><p><code>bean</code>对象的创建、依赖关系交给<code>Ioc</code>容器来管理，无需手动<code>new</code>对象，方便解耦，便于开发。</p><h2 id="2-IoC容器"><a href="#2-IoC容器" class="headerlink" title="2.IoC容器"></a>2.IoC容器</h2><p><code>Spring</code>容器的最顶层接口是<code>BeanFactory</code>，实际开发中常用<code>ApplicationContext</code>。</p><p>两个接口的区别：</p><ul><li><code>ApplicationContext</code>：立即加载。读取配置文件后马上创建对象放入容器。</li><li><code>BeanFactory</code>：延迟加载。什么时候根据<code>id</code>获取对象，什么时候才真正创建对象。</li></ul><p><code>ApplicationContext</code>的三个常用实现类</p><ul><li><p><code>ClassPathApplicationContext</code>：加载类路径下的配置文件。</p></li><li><p><code>FileSystemXmlApplicationContext</code>：加载磁盘任意路径下的配置文件。</p></li><li><p><code>AnnotationConfigApplicationContext</code>：读取注解 创建容器。</p></li></ul><h2 id="3-Bean"><a href="#3-Bean" class="headerlink" title="3.Bean"></a>3.Bean</h2><h3 id="1-创建bean的三种方式"><a href="#1-创建bean的三种方式" class="headerlink" title="1.创建bean的三种方式"></a>1.创建bean的三种方式</h3><ol><li>使用默认的无参构造器（如果没有无参构造器，则报错）</li><li>使用静态工厂的静态方法创建对象</li><li>使用实例工厂的方法创建对象</li></ol><a id="more"></a><h3 id="2-bean对象的生命周期"><a href="#2-bean对象的生命周期" class="headerlink" title="2.bean对象的生命周期"></a>2.bean对象的生命周期</h3><ol><li>单例<ul><li>出生：当容器创建时对象出生</li><li>活着：只要容器还在，对象一直活着</li><li>死亡：容器销毁，对象消亡</li><li>总结：单例对象的生命周期与容器相同</li></ul></li><li>多例<ul><li>出生：使用对象时才创建（延迟加载）</li><li>活着：对象只要在使用过程中就一直活着</li><li>死亡：当对象长时间不用且无其他对象引用时，由<code>GC</code>回收</li></ul></li></ol><h3 id="3-依赖注入"><a href="#3-依赖注入" class="headerlink" title="3.依赖注入"></a>3.依赖注入</h3><p> 依赖关系的管理交给Spring来维护在当前类需要用到其他类的对象时，由Spring为我们提供，只需在配置文件中说明。</p><p>依赖注入的数据有三类：</p><ol><li>基本类型和<code>String</code></li><li>其他<code>bean</code>类型（在配置文件中或注解中配置过的bean）</li><li>复杂类型（集合类型）</li></ol><p>注入的方式有三种：</p><ol><li>使用构造方法</li><li>使用<code>set</code>方法</li><li>使用注解</li></ol><h3 id="4-常用注解"><a href="#4-常用注解" class="headerlink" title="4.常用注解"></a>4.常用注解</h3><ol><li>用于创建对象的注解（作用类似于<code>bean</code>标签）</li></ol><ul><li><code>@Component</code></li></ul><blockquote><p><strong>作用</strong>：写在类之前，把当前类的对象注入到容器中</p><p><strong>属性</strong>：value 指定bean的id 默认值是当前类名首字母改为小写</p></blockquote><ul><li><p><code>@Controller</code>：一般用在表现层</p></li><li><p><code>@Serive</code>：一般用在业务层</p></li><li><p><code>@Repository</code>：一般用在持久层</p><p>  以上三个注解的作用与属性和<code>Component</code>一样，<br>他们三个是<code>Spring</code>框架提供的明确的三层使用的注解，使三层对象更加清晰。</p></li></ul><hr><ol start="2"><li>用于注入数据的注解（作用相当于<code>properties</code>标签）</li></ol><ul><li><p><code>@Autowired</code>:</p><blockquote><p><strong>作用</strong>：自动按照类型注入。只要容器中有唯一的一个bean对象类型和要注入的变量类型匹配，就可以注入成功</p><p><strong>使用的位置</strong>：变量上或方法上</p><p><strong>注意</strong>：如果容器中没有任何bean的类型匹配，则报错。<br>如果容器中有多个<code>bean</code>的类型和要注入的变量类型匹配，如果要注入的变量名称和<code>bean</code>的<code>id</code>相匹配，则注入之，否则报错。<br>另外，使用注解的方法注入时，set方法不是必须的</p></blockquote></li><li><p><code>@Qualifier</code></p><blockquote><p><strong>作用</strong>：在按照类中注入的基础上再按名称注入。</p><p><strong>注意</strong>：它给类成员注入时不能单独使用，必须和<code>Autowired</code>配合使用，但是在给方法参数注入时可以单独使用。</p><p><strong>属性</strong>：<code>value</code> 用于指定注入<code>bean</code>的<code>id</code></p></blockquote></li><li><p><code>@Resource</code></p><blockquote><p><strong>作用</strong>：直接按照<code>bean</code>的id注入，可以独立使用，不需要再和<code>Autowired</code>一起使用</p><p><strong>属性</strong>：name 用于指定注入<code>bean</code>的<code>id</code></p><p><strong>注意</strong>：以上三个注解只能注入其他<code>bean</code>类型的数据，而基本类型和<code>String</code>类型无法使用上述注解</p></blockquote></li></ul><p>另外，集合类型注入只能使用xml</p><ul><li><code>@Value</code><blockquote><p><strong>作用</strong>：用于注入基本类型和<code>String</code>类型的数据</p><p><strong>属性</strong>：<code>value</code>：用于指定数据的值</p><p>它可以使用<code>Spring</code>中的<code>SpEL</code>。<code>SpEL</code>写法：<code>${表达式}</code></p></blockquote></li></ul><hr><ol start="3"><li>一些和配置有关的注解</li></ol><ul><li><p>可以使用配置类以代替<code>bean.xml</code>配置文件的作用</p></li><li><p><code>@Configuration</code></p><blockquote><p><strong>作用</strong>：指定当前类是一个配置类</p><p><strong>细节</strong>：当配置类作为<code>AnnotationConfigApplicationContext</code>对象创建的参数时，可以不写。</p></blockquote></li><li><p><code>@ComponentScan</code></p><blockquote><p><strong>作用</strong>：指定创建容器时要扫描的包</p></blockquote></li><li><p><code>@Bean</code></p><blockquote><p><strong>作用</strong>：用在方法前，将方法的返回值作为<code>bean</code>对象存入<code>IoC</code>容器</p><p><strong>属性</strong>：<code>name</code> 用于指定<code>bean</code>的<code>id</code> 默认值为当前方法名</p><p><strong>细节</strong>：使用注解配置方法时，如果方法有参数，<code>Spring</code>框架会去容器中查找是否有该类型的<code>bean</code>，查找方式和<code>Autowired</code>相同</p></blockquote></li><li><p><code>@Import</code></p><blockquote><p><strong>作用</strong>：用于导入其他配置类</p><p><strong>属性</strong>：<code>value</code> 用于指定其他配置类的字节码</p></blockquote></li><li><p><code>@PropertySource</code></p><blockquote><p><strong>作用</strong>：用于指定properties文件的位置</p><p><strong>属性</strong>：<code>value</code> 指定文件名称和路径<br>关键字<code>classpath</code>表示类路径下</p></blockquote></li></ul>]]></content>
+      
+      
       <categories>
-        <category>Spring</category>
+          
+          <category> Spring </category>
+          
       </categories>
-      <tags>
-        <tag>Spring</tag>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Git学习</title>
-    <url>/2020/01/30/learngit/</url>
-    <content><![CDATA[<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><p>Git是一个分布式版本控制系统，分为工作区，版本库和远程仓库。</p>
-<p>工作区是本地能看到的目录，版本库可分为暂存区和本地仓库，远程仓库被置于远程，可由Github托管。</p>
-<p>把本地文件放入本地仓库分两步进行：</p>
-<p>第一步：<code>git add</code>将工作区的文件添加到暂存区；</p>
-<p>第二步：<code>git commit</code>将暂存区的所有内容提交到本地仓库（当前分支）</p>
-<p>接下来，在本地仓库和远程仓库已经关联的条件下，即可使用<code>git push</code>推送当前分支到远程。</p>
-<a id="more"></a>
-
-<hr>
-<h2 id="多人协作开发"><a href="#多人协作开发" class="headerlink" title="多人协作开发"></a>多人协作开发</h2><p><code>master</code>分支是主分支，用于发布版本；</p>
-<p><code>dev</code>分支是开发分支。每个成员都在各自<code>dev</code>分支上开发，并时不时地推送到远程；</p>
-<p><code>feature</code>分支可用于开发新功能，开发完成后，合并到<code>dev</code>分支，最后删除<code>dev</code>分支；</p>
-<p><code>bug</code>分支可以被临时建立来修改bug，修改后，合并分支，删除<code>bug</code>分支。</p>
-<p>总之，<code>master</code>分支用于发布版本，每个人在各自的<code>dev</code>分支上开发，时不时往远程的<code>dev</code>进行提交，合并。如果向远程提交<code>dev</code>分支时出现冲突（即你的同伴和你对同一份文件进行了修改），则需要先<code>git pull</code>，在本地解决冲突后再提交(<code>git commit</code>、<code>git push</code>)</p>
-<hr>
-<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><ul>
-<li><p>将指定文件添加进入暂存区</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-<p>（<code>git add .</code>表示将所有文件加入暂存区）</p>
-</li>
-<li><p>删除版本库中暂存区指定文件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git rm &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-<ul>
-<li><p>将暂存区的修改提交到本地仓库</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">"your change"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>本地仓库与远程仓库建立联系（确保SSH Key已经配置好）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote add origin https://github.com/YOUR_NAME/REPO_NAME.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将远程分支拉到工作区（出现冲突时需要进行这一步，因为要在本地进行合并）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>提交到远程仓库</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push origin &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-<p>如果远程仓库为空，则</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push -u origin &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>从远程仓库克隆（会自动把本地仓库与远程仓库关联起来）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/YOUR_NAME/REPO_NAME.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建并进入分支</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout -b &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git switch -c &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>切换分支</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git switch &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>将目标分支合并到当前分支</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git merge &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除分支</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git branch -d &lt;branch&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看分支情况</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">log</span> --pretty=oneline --graph</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看以往提交的版本</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reflog</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>版本回退<br>回退指定次数</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --hard HEAD~&lt;<span class="built_in">times</span>&gt;</span><br></pre></td></tr></table></figure>
-<p>回退指定commit_id的版本（id可在log或reflog中找到）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --hard &lt;commit_id&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>改乱了工作区内的内容，想丢弃工作区的修改（返回到版本库的状态）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout -- &lt;filename&gt;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>改乱了工作区的内容并且提交到暂存区，以下命令可将修改回退到工作区，此时就回到了上一个场景的情况</p>
-<pre><code class="bash">git reset HEAD &lt;filename&gt;</code></pre>
-</li>
-</ul>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Spring </tag>
+            
+            <tag> Java </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Git学习</title>
+      <link href="/2020/01/30/learngit/"/>
+      <url>/2020/01/30/learngit/</url>
+      
+        <content type="html"><![CDATA[<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><p>Git是一个分布式版本控制系统，分为工作区，版本库和远程仓库。</p><p>工作区是本地能看到的目录，版本库可分为暂存区和本地仓库，远程仓库被置于远程，可由Github托管。</p><p>把本地文件放入本地仓库分两步进行：</p><p>第一步：<code>git add</code>将工作区的文件添加到暂存区；</p><p>第二步：<code>git commit</code>将暂存区的所有内容提交到本地仓库（当前分支）</p><p>接下来，在本地仓库和远程仓库已经关联的条件下，即可使用<code>git push</code>推送当前分支到远程。</p><a id="more"></a><hr><h2 id="多人协作开发"><a href="#多人协作开发" class="headerlink" title="多人协作开发"></a>多人协作开发</h2><p><code>master</code>分支是主分支，用于发布版本；</p><p><code>dev</code>分支是开发分支。每个成员都在各自<code>dev</code>分支上开发，并时不时地推送到远程；</p><p><code>feature</code>分支可用于开发新功能，开发完成后，合并到<code>dev</code>分支，最后删除<code>dev</code>分支；</p><p><code>bug</code>分支可以被临时建立来修改bug，修改后，合并分支，删除<code>bug</code>分支。</p><p>总之，<code>master</code>分支用于发布版本，每个人在各自的<code>dev</code>分支上开发，时不时往远程的<code>dev</code>进行提交，合并。如果向远程提交<code>dev</code>分支时出现冲突（即你的同伴和你对同一份文件进行了修改），则需要先<code>git pull</code>，在本地解决冲突后再提交(<code>git commit</code>、<code>git push</code>)</p><hr><h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><ul><li><p>将指定文件添加进入暂存区</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;filename&gt;</span><br></pre></td></tr></table></figure><p>（<code>git add .</code>表示将所有文件加入暂存区）</p></li><li><p>删除版本库中暂存区指定文件</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rm &lt;filename&gt;</span><br></pre></td></tr></table></figure></li></ul><ul><li><p>将暂存区的修改提交到本地仓库</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m <span class="string">"your change"</span></span><br></pre></td></tr></table></figure></li><li><p>本地仓库与远程仓库建立联系（确保SSH Key已经配置好）</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://github.com/YOUR_NAME/REPO_NAME.git</span><br></pre></td></tr></table></figure></li><li><p>将远程分支拉到工作区（出现冲突时需要进行这一步，因为要在本地进行合并）</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure></li><li><p>提交到远程仓库</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin &lt;branch&gt;</span><br></pre></td></tr></table></figure><p>如果远程仓库为空，则</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin &lt;branch&gt;</span><br></pre></td></tr></table></figure></li><li><p>从远程仓库克隆（会自动把本地仓库与远程仓库关联起来）</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/YOUR_NAME/REPO_NAME.git</span><br></pre></td></tr></table></figure></li><li><p>创建并进入分支</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b &lt;branch&gt;</span><br></pre></td></tr></table></figure><p>或者</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git switch -c &lt;branch&gt;</span><br></pre></td></tr></table></figure></li><li><p>切换分支</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git switch &lt;branch&gt;</span><br></pre></td></tr></table></figure></li><li><p>将目标分支合并到当前分支</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git merge &lt;branch&gt;</span><br></pre></td></tr></table></figure></li><li><p>删除分支</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d &lt;branch&gt;</span><br></pre></td></tr></table></figure></li><li><p>查看分支情况</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --pretty=oneline --graph</span><br></pre></td></tr></table></figure></li><li><p>查看以往提交的版本</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reflog</span><br></pre></td></tr></table></figure></li><li><p>版本回退<br>回退指定次数</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD~&lt;<span class="built_in">times</span>&gt;</span><br></pre></td></tr></table></figure><p>回退指定commit_id的版本（id可在log或reflog中找到）</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard &lt;commit_id&gt;</span><br></pre></td></tr></table></figure></li><li><p>改乱了工作区内的内容，想丢弃工作区的修改（返回到版本库的状态）</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -- &lt;filename&gt;</span><br></pre></td></tr></table></figure></li><li><p>改乱了工作区的内容并且提交到暂存区，以下命令可将修改回退到工作区，此时就回到了上一个场景的情况</p><pre><code class="bash">git reset HEAD &lt;filename&gt;</code></pre></li></ul>]]></content>
+      
+      
       <categories>
-        <category>Git</category>
+          
+          <category> Git </category>
+          
       </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决</title>
-    <url>/2020/01/19/windows-ubuntu/</url>
-    <content><![CDATA[<h1 id="Win10-Ubuntu-16-04-双系统安装步骤以及问题的解决"><a href="#Win10-Ubuntu-16-04-双系统安装步骤以及问题的解决" class="headerlink" title="Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决"></a>Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决</h1><h2 id="双系统安装步骤"><a href="#双系统安装步骤" class="headerlink" title="双系统安装步骤"></a>双系统安装步骤</h2><h3 id="步骤一：Ubuntu-16-04系统盘的制作"><a href="#步骤一：Ubuntu-16-04系统盘的制作" class="headerlink" title="步骤一：Ubuntu 16.04系统盘的制作"></a>步骤一：Ubuntu 16.04系统盘的制作</h3><ol>
-<li>下载Ubuntu镜像<br> 推荐使用<a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/16.04/" target="_blank" rel="noopener">清华大学开源软件镜像站</a>,选择ubuntu-16.04.6-desktop-amd64.iso下载即可</li>
-<li>下载UltraSO，使用U盘制作启动盘<ol>
-<li>选择<em>文件-&gt;打开</em>，打开Ubuntu的iso镜像。</li>
-<li>在左下角区域选择U盘，点击<em>启动-&gt;写入硬盘映像</em>。</li>
-<li>在弹出的对话框中选择写入方式为hdd或hdd+，对硬盘格式化后再点击写入。</li>
-<li>写入完毕后启动盘制作完成。</li>
-</ol>
-</li>
-</ol>
-<h3 id="步骤二：分区与安装"><a href="#步骤二：分区与安装" class="headerlink" title="步骤二：分区与安装"></a>步骤二：分区与安装</h3><ol>
-<li>使用Windows磁盘管理进行分区。<br> 通过<em>WIN + X</em>进入磁盘管理，右键点击有空余空间的磁盘，选择<em>压缩卷</em>，一般大小可设置为50G。此后的Ubuntu系统便安装在此区域。</li>
-<li>关闭Win10系统的快速启动和安全启动。<br> 具体操作可参考<a href="https://www.jianshu.com/p/38e6be8efecf" target="_blank" rel="noopener">win10安装ubuntu18.04 LTS双系统</a></li>
-<li>将启动盘插入电脑，重启电脑，进入BIOS，将U盘设置为第一启动项。</li>
-<li>按照提示信息进行安装。<ul>
-<li><strong>注意</strong>：在分区时，选择自定义模式。一般来说，只需要划分两个区，即swap区(充当虚拟内存，分区格式为swap)和主分区(挂载点/，安装系统和软件，分区格式为ext4)</li>
-</ul>
-</li>
-<li>安装完成后，拔下U盘，重启电脑，选择进入Ubuntu系统。至此，双系统安装已经完成。</li>
-</ol>
-<a id="more"></a>
-<hr>
-<h2 id="遇到的问题以及解决方案"><a href="#遇到的问题以及解决方案" class="headerlink" title="遇到的问题以及解决方案"></a>遇到的问题以及解决方案</h2><h3 id="双系统安装在logo界面卡死"><a href="#双系统安装在logo界面卡死" class="headerlink" title="双系统安装在logo界面卡死"></a>双系统安装在logo界面卡死</h3><p><strong>解决方案：</strong> 问题的原因可能是Ubuntu系统对双显卡支持不友好，可以在安装过程中选中install ubuntu选项，按e键进入编辑</p>
-<p>将<code>quite splash ---</code>改为<code>quite splash nomodeset</code></p>
-<p>显卡被禁止后默认分辨率为800x600，所以窗口可能显示不全，此时只需要按住<em>alt + s</em>（或者<em>alt + F7</em>）拖动窗口即可。</p>
-<p>重启电脑后，进入Ubuntu系统仍需要进行上述修改。</p>
-<p>进入Ubuntu系统后，如果无线网络连接正常（如果无法连接无线网，则需要接网线使用有线网），可以在<em>系统设置-&gt;软件和更新-&gt;附加驱动</em>中找到NVDIA相关选项，选择<em>应用更改</em>后重新启动即可解决显卡问题。</p>
-<h3 id="无线网卡问题"><a href="#无线网卡问题" class="headerlink" title="无线网卡问题"></a>无线网卡问题</h3><p>   进入Ubuntu系统后，可能无法找到无线网络。原因可能是系统对硬件支持不友好，无法直接找到无线网卡驱动。</p>
-<p>   <strong>解决方案：</strong> 网络上最常用的解决方法是在终端输入以下命令（当然需要确保有线网络已连接）：</p>
-   <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install bcmwl-kernal-source</span><br></pre></td></tr></table></figure>
-
-<p>   如果问题仍然无法解决，那么就需要手动下载对应你的无线网卡型号的驱动软件。</p>
-<p>   以我为例，我的网卡型号为rtl8821ce。</p>
-<ol>
-<li><p>下载网卡驱动。</p>
-  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/endlessm/linux/tree/master/drivers/net/wireless/rtl8821ce</span><br></pre></td></tr></table></figure></li>
-<li><p>修改Makefile文件<br>  将<code>export TopDIR ?=</code>之后的内容改为当前目录地址，例如：</p>
-  <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export TopDIR ?&#x3D; &#x2F;home&#x2F;chenqiming&#x2F;rtl8821ce&#x2F;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在当前目录下打开终端，进行：</p>
-  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ make</span><br><span class="line">$ sudo make install</span><br><span class="line">$ sudo modprobe -a 8821ce</span><br></pre></td></tr></table></figure>
-<p>至此，驱动已经安装完成，重新启动后即可寻找到无线wifi。</p>
-</li>
-</ol>
-]]></content>
+      
+      
+        <tags>
+            
+            <tag> Git </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决</title>
+      <link href="/2020/01/19/windows-ubuntu/"/>
+      <url>/2020/01/19/windows-ubuntu/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Win10-Ubuntu-16-04-双系统安装步骤以及问题的解决"><a href="#Win10-Ubuntu-16-04-双系统安装步骤以及问题的解决" class="headerlink" title="Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决"></a>Win10 + Ubuntu 16.04 双系统安装步骤以及问题的解决</h1><h2 id="双系统安装步骤"><a href="#双系统安装步骤" class="headerlink" title="双系统安装步骤"></a>双系统安装步骤</h2><h3 id="步骤一：Ubuntu-16-04系统盘的制作"><a href="#步骤一：Ubuntu-16-04系统盘的制作" class="headerlink" title="步骤一：Ubuntu 16.04系统盘的制作"></a>步骤一：Ubuntu 16.04系统盘的制作</h3><ol><li>下载Ubuntu镜像<br> 推荐使用<a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/16.04/" target="_blank" rel="noopener">清华大学开源软件镜像站</a>,选择ubuntu-16.04.6-desktop-amd64.iso下载即可</li><li>下载UltraSO，使用U盘制作启动盘<ol><li>选择<em>文件-&gt;打开</em>，打开Ubuntu的iso镜像。</li><li>在左下角区域选择U盘，点击<em>启动-&gt;写入硬盘映像</em>。</li><li>在弹出的对话框中选择写入方式为hdd或hdd+，对硬盘格式化后再点击写入。</li><li>写入完毕后启动盘制作完成。</li></ol></li></ol><h3 id="步骤二：分区与安装"><a href="#步骤二：分区与安装" class="headerlink" title="步骤二：分区与安装"></a>步骤二：分区与安装</h3><ol><li>使用Windows磁盘管理进行分区。<br> 通过<em>WIN + X</em>进入磁盘管理，右键点击有空余空间的磁盘，选择<em>压缩卷</em>，一般大小可设置为50G。此后的Ubuntu系统便安装在此区域。</li><li>关闭Win10系统的快速启动和安全启动。<br> 具体操作可参考<a href="https://www.jianshu.com/p/38e6be8efecf" target="_blank" rel="noopener">win10安装ubuntu18.04 LTS双系统</a></li><li>将启动盘插入电脑，重启电脑，进入BIOS，将U盘设置为第一启动项。</li><li>按照提示信息进行安装。<ul><li><strong>注意</strong>：在分区时，选择自定义模式。一般来说，只需要划分两个区，即swap区(充当虚拟内存，分区格式为swap)和主分区(挂载点/，安装系统和软件，分区格式为ext4)</li></ul></li><li>安装完成后，拔下U盘，重启电脑，选择进入Ubuntu系统。至此，双系统安装已经完成。</li></ol><a id="more"></a><hr><h2 id="遇到的问题以及解决方案"><a href="#遇到的问题以及解决方案" class="headerlink" title="遇到的问题以及解决方案"></a>遇到的问题以及解决方案</h2><h3 id="双系统安装在logo界面卡死"><a href="#双系统安装在logo界面卡死" class="headerlink" title="双系统安装在logo界面卡死"></a>双系统安装在logo界面卡死</h3><p><strong>解决方案：</strong> 问题的原因可能是Ubuntu系统对双显卡支持不友好，可以在安装过程中选中install ubuntu选项，按e键进入编辑</p><p>将<code>quite splash ---</code>改为<code>quite splash nomodeset</code></p><p>显卡被禁止后默认分辨率为800x600，所以窗口可能显示不全，此时只需要按住<em>alt + s</em>（或者<em>alt + F7</em>）拖动窗口即可。</p><p>重启电脑后，进入Ubuntu系统仍需要进行上述修改。</p><p>进入Ubuntu系统后，如果无线网络连接正常（如果无法连接无线网，则需要接网线使用有线网），可以在<em>系统设置-&gt;软件和更新-&gt;附加驱动</em>中找到NVDIA相关选项，选择<em>应用更改</em>后重新启动即可解决显卡问题。</p><h3 id="无线网卡问题"><a href="#无线网卡问题" class="headerlink" title="无线网卡问题"></a>无线网卡问题</h3><p>   进入Ubuntu系统后，可能无法找到无线网络。原因可能是系统对硬件支持不友好，无法直接找到无线网卡驱动。</p><p>   <strong>解决方案：</strong> 网络上最常用的解决方法是在终端输入以下命令（当然需要确保有线网络已连接）：</p>   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install bcmwl-kernal-source</span><br></pre></td></tr></table></figure><p>   如果问题仍然无法解决，那么就需要手动下载对应你的无线网卡型号的驱动软件。</p><p>   以我为例，我的网卡型号为rtl8821ce。</p><ol><li><p>下载网卡驱动。</p>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/endlessm/linux/tree/master/drivers/net/wireless/rtl8821ce</span><br></pre></td></tr></table></figure></li><li><p>修改Makefile文件<br>  将<code>export TopDIR ?=</code>之后的内容改为当前目录地址，例如：</p>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export TopDIR ?&#x3D; &#x2F;home&#x2F;chenqiming&#x2F;rtl8821ce&#x2F;</span><br></pre></td></tr></table></figure></li><li><p>在当前目录下打开终端，进行：</p>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ make</span><br><span class="line">$ sudo make install</span><br><span class="line">$ sudo modprobe -a 8821ce</span><br></pre></td></tr></table></figure><p>至此，驱动已经安装完成，重新启动后即可寻找到无线wifi。</p></li></ol>]]></content>
+      
+      
       <categories>
-        <category>Linux</category>
+          
+          <category> Linux </category>
+          
       </categories>
-      <tags>
-        <tag>Windows</tag>
-        <tag>Ubuntu</tag>
-        <tag>Linux</tag>
-      </tags>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> Windows </tag>
+            
+            <tag> Ubuntu </tag>
+            
+            <tag> Linux </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
 </search>

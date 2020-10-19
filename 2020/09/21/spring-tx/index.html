@@ -83,11 +83,11 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring——事务">
 <meta property="og:url" content="https://billychen1.github.io/2020/09/21/spring-tx/index.html">
-<meta property="og:site_name" content="Chen Qiming&#39;s Blog">
+<meta property="og:site_name" content="Little Big Us">
 <meta property="og:description" content="Spring——事务1. 基于XML的声明式事务控制 配置事务管理器  配置事务的通知  属性 id: 事务通知的唯一标识 transaction-manager给事务通知提供一个事务管理器的引用  配置AOP中的切入点表达式  建立事务通知和切入点表达式的关系  配置事务的属性(在事务通知tx:advice标签内部配置)">
 <meta property="article:published_time" content="2020-09-21T13:45:19.000Z">
-<meta property="article:modified_time" content="2020-09-21T13:47:34.645Z">
-<meta property="article:author" content="Billy Chen 陈启明">
+<meta property="article:modified_time" content="2020-10-19T13:00:17.590Z">
+<meta property="article:author" content="Chen">
 <meta property="article:tag" content="Spring">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
@@ -126,7 +126,7 @@
 
 
 
-  <title>Spring——事务 | Chen Qiming's Blog</title>
+  <title>Spring——事务 | Little Big Us</title>
   
 
 
@@ -156,7 +156,7 @@
     <div class="custom-logo-site-title">
       <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Chen Qiming's Blog</span>
+        <span class="site-title">Little Big Us</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
@@ -300,13 +300,13 @@
     <link itemprop="mainEntityOfPage" href="https://billychen1.github.io/2020/09/21/spring-tx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Billy Chen 陈启明">
+      <meta itemprop="name" content="Chen">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.jpg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chen Qiming's Blog">
+      <meta itemprop="name" content="Little Big Us">
     </span>
 
     
@@ -425,6 +425,21 @@
 <li>开启<code>Spring</code>对注解事务的支持<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tx:annotation-driven</span> <span class="attr">transaction-manager</span>=<span class="string">"transactionManager"</span>&gt;</span><span class="tag">&lt;/<span class="name">tx:annotation-driven</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 <li>在需要支持事务的地方（类或方法前）使用<code>@Transactional</code>注解。注解中的属性可以设置事务的属性（隔离级别、传播行为、只读等）</li>
 </ol>
+<h2 id="3-事务隔离级别和传播行为"><a href="#3-事务隔离级别和传播行为" class="headerlink" title="3.事务隔离级别和传播行为"></a>3.事务隔离级别和传播行为</h2><h3 id="1-隔离级别"><a href="#1-隔离级别" class="headerlink" title="1. 隔离级别"></a>1. 隔离级别</h3><ol>
+<li>未提交读：可以读取未提交的数据</li>
+<li>读写提交：只能读取已提交的数据，解决脏读问题（<code>Oracle</code>默认级别）</li>
+<li>可重复读：只能读取其他事务提交修改后的数据，解决不可重复读问题（<code>MySQL</code>默认级别）</li>
+<li>串行化：解决幻读问题</li>
+</ol>
+<h2 id="2-传播行为"><a href="#2-传播行为" class="headerlink" title="2.传播行为"></a>2.传播行为</h2><ol>
+<li><code>REQUIRED</code>:如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。一般的选择（默认值）</li>
+<li><code>SUPPORTS</code>:支持当前事务，如果当前没有事务，就以非事务方式执行（没有事务）</li>
+<li><code>MANDATORY</code>：使用当前的事务，如果当前没有事务，就抛出异常</li>
+<li><code>REQUERS_NEW</code>:新建事务，如果当前在事务中，把当前事务挂起。</li>
+<li><code>NOT_SUPPORTED</code>:以非事务方式执行操作，如果当前存在事务，就把当前事务挂起</li>
+<li><code>NEVER</code>:以非事务方式运行，如果当前存在事务，抛出异常</li>
+<li><code>NESTED</code>:如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行 <code>REQUIRED</code> 类似的操作。</li>
+</ol>
 
       
     </div>
@@ -536,9 +551,9 @@
             
               <img class="site-author-image" itemprop="image"
                 src="/images/avatar.jpg"
-                alt="Billy Chen 陈启明" />
+                alt="Chen" />
             
-              <p class="site-author-name" itemprop="name">Billy Chen 陈启明</p>
+              <p class="site-author-name" itemprop="name">Chen</p>
               <p class="site-description motion-element" itemprop="description">Wuhan University</p>
           </div>
 
@@ -620,7 +635,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring——事务"><span class="nav-number">1.</span> <span class="nav-text">Spring——事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-基于XML的声明式事务控制"><span class="nav-number">1.1.</span> <span class="nav-text">1. 基于XML的声明式事务控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-基于注解的配置"><span class="nav-number">1.2.</span> <span class="nav-text">2.基于注解的配置</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring——事务"><span class="nav-number">1.</span> <span class="nav-text">Spring——事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-基于XML的声明式事务控制"><span class="nav-number">1.1.</span> <span class="nav-text">1. 基于XML的声明式事务控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-基于注解的配置"><span class="nav-number">1.2.</span> <span class="nav-text">2.基于注解的配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-事务隔离级别和传播行为"><span class="nav-number">1.3.</span> <span class="nav-text">3.事务隔离级别和传播行为</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-隔离级别"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. 隔离级别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-传播行为"><span class="nav-number">1.4.</span> <span class="nav-text">2.传播行为</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -644,7 +659,7 @@
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Billy Chen 陈启明</span>
+  <span class="author" itemprop="copyrightHolder">Chen</span>
 
   
 </div>
